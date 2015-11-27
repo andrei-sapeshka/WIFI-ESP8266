@@ -17,17 +17,21 @@ FOO_at_command(uint8_t argc, char *argv[])
 void ICACHE_FLASH_ATTR
 AT_at_command(uint8_t argc, char *argv[])
 {
-    int i;
-    for (i = 0; i < argc; i++) {
-    	os_printf("%s\n", argv[i]);
-    }
+	os_printf("OK\n");
+}
+
+void ICACHE_FLASH_ATTR
+SOFTAP_at_command(uint8_t argc, char *argv[])
+{
+
 }
 
 #define AT_COMMANDS_MAX 2
 
 at_command commands[AT_COMMANDS_MAX] = {
 		AT_COMMAND(AT),
-        AT_COMMAND(FOO)
+        AT_COMMAND(FOO),
+		AT_COMMAND(SOFTAP)
 };
 
 void ICACHE_FLASH_ATTR
