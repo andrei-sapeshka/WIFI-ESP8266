@@ -3,27 +3,23 @@
 
 #include "os_type.h"
 
-//#define AT_COMMAND(NAME)  { #NAME, NAME ## _at_command }
-
 #define AT_RECV_QUEUE_LEN 64
 #define AT_RECV_TASK      0
 #define AT_COMMANDS_MAX   2
 
 os_event_t    at_recv_queue[AT_RECV_QUEUE_LEN];
-//
-//typedef struct
-//{
-//	uint8 *command;
-//	void (*function) (uint8 *command);
-//} at_command;
-//
-//void foo_at_command(uint8 *command);
-//void bar_at_command(uint8 *command);
-//
-//at_command commands[AT_COMMANDS_MAX] = {
-//		AT_COMMAND(foo),
-//		AT_COMMAND(bar)
-//};
+
+#define AT_COMMAND(NAME)  { #NAME, NAME ##_at_command }
+
+#define AT_CMD_MAXLEN 128
+
+#define AT_CMD_MAXARGS 5
+
+typedef struct
+{
+    char *command;
+    void (*callback) (uint8_t argc, char *argv[]);
+} at_command;
 
 void ICACHE_FLASH_ATTR at_init();
 

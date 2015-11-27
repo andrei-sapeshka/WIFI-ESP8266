@@ -80,6 +80,7 @@ uart_getchar()
 	if (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
 		WRITE_PERI_REG(0X60000914, 0x73);
 		ch = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
+		os_printf("%c", ch);
 	}
 
 	return ch;
