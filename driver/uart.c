@@ -33,10 +33,9 @@ uart_config()
     SET_PERI_REG_MASK(UART_CONF0(UART0), UART_RXFIFO_RST | UART_TXFIFO_RST);                                // RESET FIFO
     CLEAR_PERI_REG_MASK(UART_CONF0(UART0), UART_RXFIFO_RST | UART_TXFIFO_RST);
 	//set rx fifo trigger
-	WRITE_PERI_REG(UART_CONF1(UART0), ((100  & UART_RXFIFO_FULL_THRHD)  << UART_RXFIFO_FULL_THRHD_S)  |
-									  (0x02  & UART_RX_TOUT_THRHD)      << UART_RX_TOUT_THRHD_S       |
-									  ((0x10 & UART_TXFIFO_EMPTY_THRHD) << UART_TXFIFO_EMPTY_THRHD_S) |
-	                                  UART_RX_TOUT_EN);
+	WRITE_PERI_REG(UART_CONF1(UART0), ((255  & UART_RXFIFO_FULL_THRHD)  << UART_RXFIFO_FULL_THRHD_S)  |
+									   (0x02   & UART_RX_TOUT_THRHD)      << UART_RX_TOUT_THRHD_S       |
+									  ((0x10   & UART_TXFIFO_EMPTY_THRHD) << UART_TXFIFO_EMPTY_THRHD_S) | UART_RX_TOUT_EN);
 
 	SET_PERI_REG_MASK(UART_INT_ENA(UART0), UART_RXFIFO_TOUT_INT_ENA | UART_FRM_ERR_INT_ENA);
     //clear all interrupt
@@ -54,15 +53,16 @@ uart_rx_intr_handler(void *pt)
     } else if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_FULL_INT_ST)) {
     	ETS_UART_INTR_DISABLE();
         WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_FULL_INT_CLR);
-        os_printf("f\n");
-//        system_os_post(AT_RECV_TASK, 0, 0);
+        system_os_post(AT_RECV_TASK, 0, 0);
+//        os_printf("data: %d\n", size);
+//        while(uart_getchar()){};
 
     } else if (UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_TOUT_INT_ST)) {
     	ETS_UART_INTR_DISABLE();
         WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_TOUT_INT_CLR);
-//        os_printf("t\n");
         system_os_post(AT_RECV_TASK, 0, 0);
-//        ETS_UART_INTR_ENABLE();
+//        os_printf("text: %d\n", size);
+//        while(uart_getchar()){};
 
     } else if (UART_TXFIFO_EMPTY_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_TXFIFO_EMPTY_INT_ST)) {
     	CLEAR_PERI_REG_MASK(UART_INT_ENA(UART0), UART_TXFIFO_EMPTY_INT_ENA);
@@ -80,7 +80,7 @@ uart_getchar()
 	if (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
 		WRITE_PERI_REG(0X60000914, 0x73);
 		ch = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
-		os_printf("%c", ch);
+//		os_printf("%c", ch);
 	}
 
 	return ch;

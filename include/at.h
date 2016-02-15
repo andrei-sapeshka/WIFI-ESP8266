@@ -5,15 +5,16 @@
 
 #define AT_RECV_QUEUE_LEN 64
 #define AT_RECV_TASK      0
-#define AT_COMMANDS_MAX   2
 
 os_event_t    at_recv_queue[AT_RECV_QUEUE_LEN];
 
 #define AT_COMMAND(NAME)  { #NAME, NAME ##_at_command }
 
-#define AT_CMD_MAXLEN 128
+#define AT_CMD_MAXLEN 126
 
 #define AT_CMD_MAXARGS 5
+
+#define AT_DATA_MAXLEN 832
 
 typedef struct
 {
