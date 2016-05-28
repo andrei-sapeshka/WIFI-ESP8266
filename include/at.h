@@ -2,6 +2,7 @@
 #define __AT_H
 
 #include "os_type.h"
+#include "user_interface.h"
 
 #define AT_RECV_QUEUE_LEN 64
 #define AT_RECV_TASK      0
@@ -21,6 +22,10 @@ typedef struct
     char *command;
     void (*callback) (uint8_t argc, char *argv[]);
 } at_command;
+
+void to_scan();
+
+void listap_callback(void *info, STATUS s);
 
 void ICACHE_FLASH_ATTR at_init();
 

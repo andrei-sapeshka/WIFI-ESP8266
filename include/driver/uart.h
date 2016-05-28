@@ -112,4 +112,8 @@ LOCAL void uart_rx_intr_handler(void *pt);
 LOCAL STATUS uart_tx_one_char(uint8 ch);
 uint8_t uart_getchar();
 
+
+LOCAL void uart_putchar(char ch);
+void ICACHE_FLASH_ATTR uart_putstr(const char *str);
+
 #endif

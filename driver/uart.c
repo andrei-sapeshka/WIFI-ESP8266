@@ -5,12 +5,14 @@
 #include "osapi.h"
 
 extern UartDevice    UartDev;
+extern uart_putchar_enable;
 
 void ICACHE_FLASH_ATTR
 uart_init(UartBautRate baund_rate)
 {
     UartDev.baut_rate = baund_rate;
     uart_config(UART0);
+    os_install_putc1(uart_putchar);
 
     ETS_UART_INTR_ENABLE();
 }
@@ -84,4 +86,26 @@ uart_getchar()
 	}
 
 	return ch;
+}
+
+void ICACHE_FLASH_ATTR
+uart_putstr(const char *str)
+{
+    while(*str) {
+        uart_putchar(*(str++));
+    }
+}
+
+LOCAL void
+uart_putchar(char ch)
+{
+    if (uart_putchar_enable) {
+        while (true) {
+            uint32 fifo_cnt = READ_PERI_REG(UART_STATUS(UART0)) & (UART_TXFIFO_CNT<<UART_TXFIFO_CNT_S);
+            if ((fifo_cnt >> UART_TXFIFO_CNT_S & UART_TXFIFO_CNT) < 126) {
+                break;
+            }
+        }
+        WRITE_PERI_REG(UART_FIFO(UART0) , ch);
+    }
 }
